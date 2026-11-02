@@ -64,8 +64,11 @@ jobs:
       - name: Exportar APK debug
         run: |
           mkdir -p build
-          ./godot --headless --import --path .
-          ./godot --headless --path . --export-debug "Android" build/calculadora-3d-debug.apk
+          ./godot --headless --import --path . 2>&1 | tee export.log
+          test ${PIPESTATUS[0]} -eq 0
+          ./godot --headless --path . --export-debug "Android" build/calculadora-3d-debug.apk 2>&1 | tee -a export.log
+          test ${PIPESTATUS[0]} -eq 0
+          ! grep -E "^(ERROR|SCRIPT ERROR|Parse Error):" export.log
           ls -la build
           test -s build/calculadora-3d-debug.apk
       - uses: actions/upload-artifact@v4
