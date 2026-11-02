@@ -40,5 +40,5 @@ static func calcular(d: Dictionary) -> Dictionary:
 		"costo_lote": costo * cant, "precio": precio,
 		"comision_monto": comision_monto,
 		"ganancia": ganancia, "ganancia_lote": ganancia * cant,
-		"precio_lote": precio * cant, "valido": valido,
+		"precio_lote": precio * cant if valido else -1.0, "valido": valido,
 	}

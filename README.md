@@ -45,6 +45,8 @@ godot --headless --path . --export-debug "Android" build/calculadora-3d-debug.ap
 Para instalar: `adb install build/calculadora-3d-debug.apk` o copiar el APK al teléfono y permitir «orígenes desconocidos». Para escritorio basta abrir el proyecto en Godot y ejecutar.
 
 ## APK liberado (release)
+El APK release se genera **en local** (la CI solo genera el debug, para no subir el keystore a GitHub). En Godot 4 los datos del keystore que llenes en el diálogo de export no se guardan en `export_presets.cfg` sino en `.godot/export_credentials.cfg`, que está ignorado por git (`.godot/`); las variables de entorno de abajo tienen prioridad.
+
 `export_presets.cfg` usa el preset **"Android"** con `package/signed=true` y deja vacíos los datos del keystore (no se suben al repo); Godot los toma de variables de entorno.
 
 1. Genera tu keystore propio (una sola vez; guárdalo fuera del repo, `*.keystore` está en `.gitignore`, y respáldalo: sin él no podrás publicar actualizaciones):

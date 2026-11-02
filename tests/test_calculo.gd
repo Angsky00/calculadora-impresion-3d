@@ -41,11 +41,15 @@ func _init() -> void:
 	ok("comisión 100 inválida", 1.0 if not r.valido else 0.0, 1.0)
 	ok("precio centinela", r.precio, -1.0)
 	ok("comisión centinela", r.comision_monto, -1.0)
+	ok("precio lote centinela (no -cantidad)", r.precio_lote, -1.0)
 	ok("ganancia 0 si inválido", r.ganancia, 0.0)
 	ok("precio finito", 1.0 if is_finite(r.precio) else 0.0, 1.0)
 	d.comision = 150.0
 	r = Calculo.calcular(d)
 	ok("comisión 150 inválida", 1.0 if not r.valido else 0.0, 1.0)
+	ok("150: precio centinela", r.precio, -1.0)
+	ok("150: precio lote centinela", r.precio_lote, -1.0)
+	ok("150: comisión centinela", r.comision_monto, -1.0)
 	# Caso 4: persistencia
 	var main_script = load("res://scripts/main.gd")
 	var g := Calculo.defaults(); g.gramos = 123.0; g.precio_kg.TPU = 777.0

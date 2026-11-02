@@ -21,7 +21,7 @@ jobs:
         run: |
           ./godot --headless --import --path . 2>&1 | tee import.log
           test ${PIPESTATUS[0]} -eq 0
-          ! grep -E "^(ERROR|SCRIPT ERROR|Parse Error)" import.log
+          ! grep -E "^(ERROR|SCRIPT ERROR|Parse Error):" import.log
       - name: Comprobar scripts
         run: |
           for f in scripts/*.gd; do ./godot --headless --path . --check-only -s "res://$f"; done
