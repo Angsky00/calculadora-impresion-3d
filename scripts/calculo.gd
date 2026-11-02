@@ -28,10 +28,11 @@ static func calcular(d: Dictionary) -> Dictionary:
 	var c: float = d.comision / 100.0
 	var m: float = d.margen / 100.0
 	var valido := c < 1.0
+	# Con comisión >= 100 % no existe precio: precio y comisión valen -1.0 (centinela) y valido = false.
 	# Precio bruto P tal que lo que queda tras la comisión cubre costo + margen:
 	# P * (1 - c) = costo * (1 + m)  =>  P = costo * (1 + m) / (1 - c)
-	var precio := costo * (1.0 + m) / (1.0 - c) if valido else INF
-	var comision_monto := precio * c if valido else INF
+	var precio := costo * (1.0 + m) / (1.0 - c) if valido else -1.0
+	var comision_monto := precio * c if valido else -1.0
 	var ganancia := precio - comision_monto - costo if valido else 0.0
 	return {
 		"filamento": filamento, "luz": luz, "desgaste": desgaste,

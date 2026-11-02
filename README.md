@@ -43,3 +43,33 @@ export GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD=android
 godot --headless --path . --export-debug "Android" build/calculadora-3d-debug.apk
 ```
 Para instalar: `adb install build/calculadora-3d-debug.apk` o copiar el APK al teléfono y permitir «orígenes desconocidos». Para escritorio basta abrir el proyecto en Godot y ejecutar.
+
+## APK liberado (release)
+`export_presets.cfg` usa el preset **"Android"** con `package/signed=true` y deja vacíos los datos del keystore (no se suben al repo); Godot los toma de variables de entorno.
+
+1. Genera tu keystore propio (una sola vez; guárdalo fuera del repo, `*.keystore` está en `.gitignore`, y respáldalo: sin él no podrás publicar actualizaciones):
+   ```
+   keytool -genkeypair -v -keystore ~/claves/calculadora3d-release.keystore \
+     -alias calculadora3d -keyalg RSA -keysize 2048 -validity 10000
+   ```
+   `keytool` pide la contraseña y los datos (nombre, organización…). Usa la misma contraseña para el almacén y la clave.
+2. Configura las variables (o llena `keystore/release`, `keystore/release_user` y `keystore/release_password` en Proyecto > Exportar > Android, sin commitear ese cambio):
+   ```
+   export GODOT_ANDROID_KEYSTORE_RELEASE_PATH=~/claves/calculadora3d-release.keystore
+   export GODOT_ANDROID_KEYSTORE_RELEASE_USER=calculadora3d
+   export GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD='tu-contraseña'
+   ```
+3. Sube `version/code` (entero, +1 en cada versión) y `version/name` en `export_presets.cfg`.
+4. Exporta:
+   ```
+   mkdir -p build
+   godot --headless --path . --export-release "Android" build/calculadora-3d-release.apk
+   ```
+   Requiere las mismas plantillas 4.7, JDK 17 y Android SDK con build-tools que el APK debug.
+
+**Firmar y alinear:** con `package/signed=true` Godot alinea (zipalign) y firma con `apksigner` del build-tools del SDK durante el export; no hace falta hacerlo a mano. Para verificar:
+```
+$ANDROID_SDK_ROOT/build-tools/<versión>/zipalign -c -v 4 build/calculadora-3d-release.apk
+$ANDROID_SDK_ROOT/build-tools/<versión>/apksigner verify --verbose build/calculadora-3d-release.apk
+```
+Si exportas sin firmar (`package/signed=false`), alinea primero y firma después: `zipalign -p -f 4 entrada.apk alineado.apk` y luego `apksigner sign --ks <keystore> --ks-key-alias calculadora3d alineado.apk`. Para Google Play se usa AAB (`gradle_build/use_gradle_build=true`, `gradle_build/export_format=1`), que este preset no tiene activado.
