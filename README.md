@@ -47,7 +47,7 @@ Para instalar: `adb install build/calculadora-3d-debug.apk` o copiar el APK al t
 ## APK liberado (release)
 El APK release se genera **en local** (la CI solo genera el debug, para no subir el keystore a GitHub). En Godot 4 los datos del keystore que llenes en el diálogo de export no se guardan en `export_presets.cfg` sino en `.godot/export_credentials.cfg`, que está ignorado por git (`.godot/`); las variables de entorno de abajo tienen prioridad.
 
-`export_presets.cfg` usa el preset **"Android"** con `package/signed=true` y deja vacíos los datos del keystore (no se suben al repo); Godot los toma de variables de entorno.
+`export_presets.cfg` usa el preset **"Android"** con `package/signed=true` y no guarda el keystore: Godot lo toma de las variables de entorno de abajo (prioridad) o de `.godot/export_credentials.cfg` (ignorado por git).
 
 1. Genera tu keystore propio (una sola vez; guárdalo fuera del repo, `*.keystore` está en `.gitignore`, y respáldalo: sin él no podrás publicar actualizaciones):
    ```
@@ -55,7 +55,7 @@ El APK release se genera **en local** (la CI solo genera el debug, para no subir
      -alias calculadora3d -keyalg RSA -keysize 2048 -validity 10000
    ```
    `keytool` pide la contraseña y los datos (nombre, organización…). Usa la misma contraseña para el almacén y la clave.
-2. Configura las variables (o llena `keystore/release`, `keystore/release_user` y `keystore/release_password` en Proyecto > Exportar > Android, sin commitear ese cambio):
+2. Configura las variables (o llena `keystore/release`, `keystore/release_user` y `keystore/release_password` en Proyecto > Exportar > Android; se guardan en `.godot/export_credentials.cfg`, no en el repo):
    ```
    export GODOT_ANDROID_KEYSTORE_RELEASE_PATH=~/claves/calculadora3d-release.keystore
    export GODOT_ANDROID_KEYSTORE_RELEASE_USER=calculadora3d
