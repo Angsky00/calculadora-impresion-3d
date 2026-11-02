@@ -128,13 +128,13 @@ func _actualizar() -> void:
 		t += "Comisión de plataforma: %s por pieza\n" % _m(r.comision_monto)
 		t += "[b]Ganancia por pieza: %s[/b]\n[b]Ganancia por lote: %s[/b]" % [_m(r.ganancia), _m(r.ganancia_lote)]
 	else:
-		t += "[color=red]La comisión debe ser menor a 100 %.[/color]"
+		t += "[color=red]La comisión debe ser menor a 100 %: no hay precio posible.[/color]"
 	salida.text = t
 
-static func cargar() -> Dictionary:
+static func cargar(ruta: String = RUTA) -> Dictionary:
 	var d := Calculo.defaults()
 	var cfg := ConfigFile.new()
-	if cfg.load(RUTA) != OK:
+	if cfg.load(ruta) != OK:
 		return d
 	for k in d:
 		d[k] = cfg.get_value("datos", k, d[k])
@@ -142,8 +142,8 @@ static func cargar() -> Dictionary:
 		d.material = "PLA"
 	return d
 
-static func guardar(d: Dictionary) -> void:
+static func guardar(d: Dictionary, ruta: String = RUTA) -> void:
 	var cfg := ConfigFile.new()
 	for k in d:
 		cfg.set_value("datos", k, d[k])
-	cfg.save(RUTA)
+	cfg.save(ruta)

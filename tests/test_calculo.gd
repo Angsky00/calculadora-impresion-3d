@@ -39,11 +39,25 @@ func _init() -> void:
 	d.comision = 100.0
 	r = Calculo.calcular(d)
 	ok("comisión 100 inválida", 1.0 if not r.valido else 0.0, 1.0)
+	ok("precio centinela", r.precio, -1.0)
+	ok("comisión centinela", r.comision_monto, -1.0)
+	ok("ganancia 0 si inválido", r.ganancia, 0.0)
+	ok("precio finito", 1.0 if is_finite(r.precio) else 0.0, 1.0)
+	d.comision = 150.0
+	r = Calculo.calcular(d)
+	ok("comisión 150 inválida", 1.0 if not r.valido else 0.0, 1.0)
 	# Caso 4: persistencia
 	var main_script = load("res://scripts/main.gd")
 	var g := Calculo.defaults(); g.gramos = 123.0; g.precio_kg.TPU = 777.0
-	main_script.guardar(g)
-	var c: Dictionary = main_script.cargar()
+	# Ruta temporal por pid: no toca user://config.cfg real.
+	var tmp := "user://test_config_%d.cfg" % OS.get_process_id()
+	var real_antes := FileAccess.get_file_as_bytes("user://config.cfg") if FileAccess.file_exists("user://config.cfg") else PackedByteArray()
+	main_script.guardar(g, tmp)
+	var c: Dictionary = main_script.cargar(tmp)
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(tmp))
+	ok("tmp borrado", 0.0 if FileAccess.file_exists(tmp) else 1.0, 1.0)
+	var real_despues := FileAccess.get_file_as_bytes("user://config.cfg") if FileAccess.file_exists("user://config.cfg") else PackedByteArray()
+	ok("config real intacto", 1.0 if real_antes == real_despues else 0.0, 1.0)
 	ok("guardado gramos", c.gramos, 123.0)
 	ok("guardado TPU", c.precio_kg.TPU, 777.0)
 	print("FALLOS: %d" % fallos)

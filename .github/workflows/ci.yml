@@ -18,7 +18,10 @@ jobs:
           unzip -q Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip
           mv Godot_v${GODOT_VERSION}-stable_linux.x86_64 godot
       - name: Importar proyecto
-        run: ./godot --headless --import --path . || true
+        run: |
+          ./godot --headless --import --path . 2>&1 | tee import.log
+          test ${PIPESTATUS[0]} -eq 0
+          ! grep -E "^(ERROR|SCRIPT ERROR|Parse Error)" import.log
       - name: Comprobar scripts
         run: |
           for f in scripts/*.gd; do ./godot --headless --path . --check-only -s "res://$f"; done
@@ -61,7 +64,7 @@ jobs:
       - name: Exportar APK debug
         run: |
           mkdir -p build
-          ./godot --headless --import --path . || true
+          ./godot --headless --import --path .
           ./godot --headless --path . --export-debug "Android" build/calculadora-3d-debug.apk
           ls -la build
           test -s build/calculadora-3d-debug.apk
